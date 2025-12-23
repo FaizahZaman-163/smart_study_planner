@@ -9,19 +9,15 @@ class AppBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Background image
         Positioned.fill(
-          child: Image.asset("assets/images/image.jpg", fit: BoxFit.cover),
-        ),
-
-        // Dark overlay using predefined low-opacity color
-        Positioned.fill(
-          child: Container(
-            color: Colors.black26, // light dark overlay without withOpacity
+          child: Image.asset(
+            "assets/images/image.jpg",
+            fit: BoxFit.cover,
+            filterQuality: FilterQuality.high,
           ),
         ),
+        Positioned.fill(child: Container(color: Colors.black26)),
 
-        // Page content
         child,
       ],
     );

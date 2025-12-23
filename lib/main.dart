@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+import 'auth_gate.dart'; // ← Add this import
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: 'https://llbhumbbtswmchrhcjxh.supabase.co',
+    anonKey: 'sb_publishable_Ob1UMKYeIZP3j6mATquYyQ_ha8NO8R0',
+  );
+
   runApp(const MyApp());
 }
 
@@ -12,8 +21,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Login App',
-      home: const HomePage(),
+      title: 'Smart Study Planner',
+      home: const AuthGate(),
     );
   }
 }

@@ -65,7 +65,7 @@ class HomePage extends StatelessWidget {
             const Expanded(
               child: Center(
                 child: Text(
-                  "Welcome to Home Page",
+                  "Welcome To The Home Page",
                   style: TextStyle(
                     fontSize: 80,
                     color: Color.fromARGB(255, 250, 250, 250),
