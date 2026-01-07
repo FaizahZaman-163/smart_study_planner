@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'home_page.dart';
-import 'authenticated_home.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -21,7 +19,7 @@ class AuthGate extends StatelessWidget {
         final session = snapshot.data?.session;
 
         if (session != null) {
-          return const AuthenticatedHomePage();
+          return const HomePage();
         } else {
           return const HomePage();
         }

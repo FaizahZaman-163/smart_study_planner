@@ -11,63 +11,62 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
-  final AuthService authService = AuthService();
+  final TextEditingController confirmController = TextEditingController();
 
+  final AuthService authService = AuthService();
   bool isLoading = false;
 
+  void showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
+  }
+
   Future<void> handleRegister() async {
-    if (emailController.text.isEmpty ||
-        passwordController.text.isEmpty ||
-        confirmPasswordController.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+    final name = nameController.text.trim();
+    final email = emailController.text.trim();
+    final password = passwordController.text;
+    final confirm = confirmController.text;
+
+    if (name.isEmpty || email.isEmpty || password.isEmpty || confirm.isEmpty) {
+      showError('Please fill all fields');
       return;
     }
 
-    if (passwordController.text != confirmPasswordController.text) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
+    if (password != confirm) {
+      showError('Passwords do not match');
       return;
     }
 
-    if (passwordController.text.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password must be at least 6 characters')),
-      );
+    if (password.length < 8) {
+      showError('Password must be at least 8 characters');
       return;
     }
 
     setState(() => isLoading = true);
 
     try {
-      final response = await authService.signUp(
-        email: emailController.text.trim(),
-        password: passwordController.text,
+      await authService.signUp(
+        email: email,
+        password: password,
+        fullName: name,
       );
 
-      if (response.user != null) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Registration successful! Please check your email to verify.',
-              ),
-            ),
-          );
-          Navigator.pop(context);
-        }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Success! Please check your email to verify.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration failed: ${e.toString()}')),
-        );
+        showError('Registration failed: ${e.toString()}');
       }
     } finally {
       if (mounted) {
@@ -84,7 +83,7 @@ class _RegisterPageState extends State<RegisterPage> {
           child: SingleChildScrollView(
             child: Container(
               width: 380,
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white70,
                 borderRadius: BorderRadius.circular(25),
@@ -92,57 +91,64 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    "Register",
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  Text(
+                    "Create Account",
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 25),
+                  InputField(
+                    controller: nameController,
+                    label: "Full Name",
+                    hint: "Your name",
+                    icon: Icons.person,
+                  ),
+                  SizedBox(height: 15),
                   InputField(
                     controller: emailController,
                     label: "Email",
-                    hint: "Enter your email",
+                    hint: "your@email.com",
                     icon: Icons.email,
                     keyboardType: TextInputType.emailAddress,
                   ),
-                  const SizedBox(height: 15),
+                  SizedBox(height: 15),
                   InputField(
                     controller: passwordController,
                     label: "Password",
-                    hint: "Enter your password",
+                    hint: "Min 8 characters",
                     icon: Icons.lock,
                     obscureText: true,
                   ),
-                  const SizedBox(height: 15),
+                  SizedBox(height: 15),
                   InputField(
-                    controller: confirmPasswordController,
+                    controller: confirmController,
                     label: "Confirm Password",
-                    hint: "Re-enter your password",
+                    hint: "Re-type password",
                     icon: Icons.lock_outline,
                     obscureText: true,
                   ),
-                  const SizedBox(height: 25),
+                  SizedBox(height: 30),
                   ElevatedButton(
+                    onPressed: isLoading ? null : handleRegister,
                     style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 45),
+                      minimumSize: Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    onPressed: isLoading ? null : handleRegister,
                     child: isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                        ? SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
                           )
-                        : const Text("Register"),
+                        : Text("Register", style: TextStyle(fontSize: 18)),
                   ),
-                  const SizedBox(height: 15),
+                  SizedBox(height: 15),
                   TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Already have an account? Login"),
+                    onPressed: () => Navigator.pop(context),
+                    child: Text("Already have an account? Login"),
                   ),
                 ],
               ),
@@ -155,9 +161,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
+    nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
-    confirmPasswordController.dispose();
+    confirmController.dispose();
     super.dispose();
   }
 }

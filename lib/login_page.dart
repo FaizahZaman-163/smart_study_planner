@@ -19,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   bool isLoading = false;
 
   Future<void> handleLogin() async {
-    // Validation
+    
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter email and password')),
@@ -37,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response.user != null) {
         if (mounted) {
-          // Show success message
+          
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Login successful!'),
@@ -45,12 +45,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           );
 
-          // DO NOT navigate manually!
-          // The AuthGate listens to auth changes and will automatically
-          // switch to AuthenticatedHomePage
-
-          // Optional: Close the login page (goes back to guest HomePage briefly,
-          // but AuthGate will immediately redirect to authenticated screen)
+          
           Navigator.pop(context);
         }
       }
